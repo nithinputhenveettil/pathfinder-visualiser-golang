@@ -9,15 +9,16 @@ import (
 )
 
 type node struct {
-	row             int32
-	col             int32
-	isStart         bool
-	isFinish        bool
-	isVisited       bool
-	isAnimateOn     bool
-	isBarrier       bool
-	previousVisited *node
-	distance        float64
+	row              int32
+	col              int32
+	isStart          bool
+	isFinish         bool
+	isVisited        bool
+	animateVisited   bool
+	animateShortPath bool
+	isBarrier        bool
+	previousVisited  *node
+	distance         float64
 }
 
 var (
@@ -49,7 +50,9 @@ var grid [][]*node
 var startVisualise bool
 var startNode, endNode *node
 var vIndex int
+var sIndex int
 var visitedNodes []*node
+var shortPathNodes []*node
 
 func getInitGrid() [][]*node {
 	var g [][]*node
@@ -100,20 +103,26 @@ func drawGrid(g [][]*node) {
 			if n.isBarrier && !n.isStart && !n.isFinish {
 				drawBarrierNode(x, y)
 			}
-			if n.isVisited && n.isAnimateOn && !n.isStart && !n.isFinish {
+			if n.isVisited && n.animateVisited && !n.isStart && !n.isFinish {
 				drawVisitedNode(x, y)
+			}
+			if n.isVisited && n.animateShortPath && !n.isStart && !n.isFinish {
+				drawVisitedNodeshortPath(x, y)
 			}
 		}
 	}
 }
 
-func animateVisited(nodes []*node) {
-	if vIndex == len(nodes) {
-		return
+func nextTickAnimate(vNodes []*node, sNodes []*node) {
+	if vIndex != len(vNodes) {
+		n := vNodes[vIndex]
+		n.animateVisited = true
+		vIndex += 1
+	} else if sIndex != len(sNodes) {
+		n := sNodes[sIndex]
+		n.animateShortPath = true
+		sIndex += 1
 	}
-	n := nodes[vIndex]
-	n.isAnimateOn = true
-	vIndex += 1
 }
 
 func drawNodeOutline(x, y int32) {
@@ -132,6 +141,10 @@ func drawEndNode(x, y int32) {
 
 func drawBarrierNode(x, y int32) {
 	rl.DrawRectangle(x+1, y+1, BlockSize-3, BlockSize-3, OT_COL)
+}
+
+func drawVisitedNodeshortPath(x, y int32) {
+	rl.DrawRectangle(x+1, y+1, BlockSize-3, BlockSize-3, rl.Yellow)
 }
 
 func drawVisitedNode(x, y int32) {
@@ -157,8 +170,10 @@ func litsenKeyboardEvents() {
 		// reset
 		startVisualise = false
 		vIndex = 0
+		sIndex = 0
 		grid = getInitGrid()
 		visitedNodes = []*node{}
+		shortPathNodes = []*node{}
 	}
 }
 
@@ -193,6 +208,7 @@ func updateUnvisitedNeighborNodes(n *node, g [][]*node) []*node {
 	for _, un := range unvisitedNeighbors {
 		if !un.isVisited {
 			un.distance = n.distance + 1
+			un.previousVisited = n
 			uNodes = append(uNodes, un)
 		}
 	}
@@ -235,6 +251,19 @@ func dijkstra(startNode, endNode *node, g [][]*node) []*node {
 	return visitedNodes
 }
 
+func getNodesInShortPath(endNode *node) []*node {
+	shortPathNodes := []*node{}
+	start := endNode
+	for start != nil {
+		shortPathNodes = append(shortPathNodes, &node{})
+		copy(shortPathNodes[1:], shortPathNodes)
+		shortPathNodes[0] = start
+		start = start.previousVisited
+	}
+
+	return shortPathNodes
+}
+
 func main() {
 	grid = getInitGrid()
 	rl.InitWindow(width, length, "Path Finder Visualiser")
@@ -244,12 +273,13 @@ func main() {
 		litsenKeyboardEvents()
 		if startVisualise {
 			visitedNodes = dijkstra(startNode, endNode, grid)
+			shortPathNodes = getNodesInShortPath(endNode)
 			fmt.Println("sasa", len(visitedNodes))
 			startVisualise = false
 		}
 		rl.BeginDrawing()
 		drawGrid(grid)
-		animateVisited(visitedNodes)
+		nextTickAnimate(visitedNodes, shortPathNodes)
 		rl.ClearBackground(BG_COL)
 		rl.EndDrawing()
 	}
