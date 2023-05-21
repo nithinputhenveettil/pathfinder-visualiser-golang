@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -12,6 +13,7 @@ type node struct {
 	isStart         bool
 	isFinish        bool
 	isVisited       bool
+	isBarrier       bool
 	previousVisited *node
 	distance        float64
 }
@@ -48,6 +50,8 @@ func getInitGrid() [][]*node {
 	l := length / BlockSize
 	w := width / BlockSize
 
+	fmt.Println(l, w)
+
 	for i = 0; i < l; i++ {
 		r := []*node{}
 		for j = 0; j < w; j++ {
@@ -62,6 +66,8 @@ func getInitGrid() [][]*node {
 		}
 		grid = append(grid, r)
 	}
+
+	grid[1][3].isBarrier = true
 
 	return grid
 
@@ -80,6 +86,9 @@ func drawGrid(grid [][]*node) {
 			if n.isFinish {
 				drawEndNode(x, y)
 			}
+			if n.isBarrier && !n.isStart && !n.isFinish {
+				drawBarrierNode(x, y)
+			}
 		}
 	}
 }
@@ -94,9 +103,18 @@ func drawEndNode(x, y int32) {
 	rl.DrawRing(rl.Vector2{X: float32(x + (BlockSize / 2)), Y: float32(y + (BlockSize / 2))}, 6, 10, 0, 360, 0, ST_COL)
 }
 
-func litsenMouseClick() {
-	if rl.IsMouseButtonDown(0) {
-		// points := rl.GetMousePosition()
+func drawBarrierNode(x, y int32) {
+	rl.DrawRectangle(x, y, BlockSize, BlockSize, rl.Black)
+}
+
+func litsenMouseClick(grid [][]*node) {
+	if rl.IsMouseButtonPressed(0) {
+		points := rl.GetMousePosition()
+		fmt.Println(points)
+		x := (int32)(points.X / float32(BlockSize))
+		y := (int32)(points.Y / float32(BlockSize))
+		grid[y][x].isBarrier = !grid[y][x].isBarrier
+		fmt.Println(points, x, y)
 	}
 }
 
@@ -105,7 +123,7 @@ func main() {
 	rl.InitWindow(width, length, "Path Finder Visualiser")
 	rl.SetTargetFPS(FPS)
 	for !rl.WindowShouldClose() {
-		litsenMouseClick()
+		litsenMouseClick(grid)
 		rl.BeginDrawing()
 		drawGrid(grid)
 		rl.ClearBackground(BG_COL)
