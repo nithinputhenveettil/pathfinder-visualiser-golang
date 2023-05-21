@@ -6,16 +6,30 @@ import (
 )
 
 func LitsenMouseClick(v *grid.Visualiser) {
-	if rl.IsMouseButtonDown(0) {
-		points := rl.GetMousePosition()
-		x := (int32)(points.X / float32(grid.BlockSize))
-		y := (int32)(points.Y / float32(grid.BlockSize))
-		v.Grid[y][x].IsBarrier = !v.Grid[y][x].IsBarrier
+	if rl.IsMouseButtonPressed(0) {
+		x, y := getXY()
+		if v.Grid[y][x] == v.StartNode {
+			v.Grid[y][x].IsStart = false
+			v.StartNode = nil
+		} else if v.Grid[y][x] == v.EndNode {
+			v.Grid[y][x].IsFinish = false
+			v.EndNode = nil
+		} else {
+			v.Grid[y][x].IsBarrier = !v.Grid[y][x].IsBarrier
+		}
 	}
-	if rl.IsMouseButtonPressed(1) {
-		points := rl.GetMousePosition()
-		x := (int32)(points.X / float32(grid.BlockSize))
-		y := (int32)(points.Y / float32(grid.BlockSize))
+	if rl.IsMouseButtonReleased(0) {
+		x, y := getXY()
+		if v.StartNode == nil {
+			v.StartNode = v.Grid[y][x]
+			v.Grid[y][x].IsStart = true
+		} else if v.EndNode == nil {
+			v.EndNode = v.Grid[y][x]
+			v.Grid[y][x].IsFinish = true
+		}
+	}
+	if rl.IsMouseButtonDown(1) {
+		x, y := getXY()
 		v.Grid[y][x].IsBarrier = !v.Grid[y][x].IsBarrier
 	}
 }
@@ -28,4 +42,11 @@ func LitsenKeyboardEvents(v *grid.Visualiser) {
 		// reset
 		v.Reset()
 	}
+}
+
+func getXY() (int32, int32) {
+	points := rl.GetMousePosition()
+	x := (int32)(points.X / float32(grid.BlockSize))
+	y := (int32)(points.Y / float32(grid.BlockSize))
+	return x, y
 }
