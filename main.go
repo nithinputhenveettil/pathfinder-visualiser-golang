@@ -12,7 +12,7 @@ import (
 func main() {
 	v := &grid.Visualiser{}
 	v.Init()
-	rl.InitWindow(grid.Width, grid.Length+150, "Path Finder Visualiser - Dijkstra's Algorithm")
+	rl.InitWindow(grid.Width, grid.Length+150, "Path Finder Visualiser - Dijkstra's Algorithm!")
 	rl.SetTargetFPS(grid.FPS)
 	for !rl.WindowShouldClose() {
 		events.LitsenMouseClick(v)
