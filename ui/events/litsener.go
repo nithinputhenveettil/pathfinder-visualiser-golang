@@ -51,6 +51,6 @@ func LitsenKeyboardEvents(v *grid.Visualiser) {
 func getXY() (int32, int32) {
 	points := rl.GetMousePosition()
 	x := (int32)(points.X / float32(grid.BlockSize))
-	y := (int32)(points.Y / float32(grid.BlockSize))
+	y := (int32)((points.Y - float32(grid.TopPadding)) / float32(grid.BlockSize))
 	return x, y
 }

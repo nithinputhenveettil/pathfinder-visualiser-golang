@@ -41,7 +41,7 @@ func drawVisitedNodeshortPath(x, y int32, previousVisited *node.Node) {
 	}
 
 	xPrevious := previousVisited.Col * grid.BlockSize
-	yPrevious := previousVisited.Row * grid.BlockSize
+	yPrevious := previousVisited.Row*grid.BlockSize + grid.TopPadding
 
 	rl.DrawLineEx(rl.Vector2{
 		X: float32(xPrevious + (grid.BlockSize / 2)),
@@ -58,7 +58,7 @@ func DrawGrid(v *grid.Visualiser) {
 	for _, r := range v.Grid {
 		for _, n := range r {
 			x := n.Col * grid.BlockSize
-			y := n.Row * grid.BlockSize
+			y := n.Row*grid.BlockSize + grid.TopPadding
 			drawNodeOutline(x, y)
 
 			if n.IsBarrier && !n.IsStart && !n.IsFinish {
@@ -79,7 +79,7 @@ func DrawGrid(v *grid.Visualiser) {
 
 	for _, n := range v.ShortPathNodes {
 		x := n.Col * grid.BlockSize
-		y := n.Row * grid.BlockSize
+		y := n.Row*grid.BlockSize + grid.TopPadding
 		if n.IsVisited && n.AnimateShortPath && !n.IsStart {
 			drawVisitedNodeshortPath(x, y, n.PreviousVisited)
 		}

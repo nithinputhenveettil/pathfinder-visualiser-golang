@@ -15,9 +15,10 @@ var (
 )
 
 var (
-	Width  int32 = 1300
-	Length int32 = 650
-	FPS    int32 = 120
+	Width      int32 = 1300
+	Length     int32 = 575
+	TopPadding int32 = 50
+	FPS        int32 = 120
 
 	BlockSize int32   = 25
 	Infinity  float64 = math.Inf(1)
