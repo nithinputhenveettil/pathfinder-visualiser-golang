@@ -14,6 +14,7 @@ type node struct {
 	isStart         bool
 	isFinish        bool
 	isVisited       bool
+	isAnimateOn     bool
 	isBarrier       bool
 	previousVisited *node
 	distance        float64
@@ -47,6 +48,8 @@ var (
 var grid [][]*node
 var startVisualise bool
 var startNode, endNode *node
+var vIndex int
+var visitedNodes []*node
 
 func getInitGrid() [][]*node {
 	var g [][]*node
@@ -97,11 +100,20 @@ func drawGrid(g [][]*node) {
 			if n.isBarrier && !n.isStart && !n.isFinish {
 				drawBarrierNode(x, y)
 			}
-			if n.isVisited && !n.isStart && !n.isFinish {
+			if n.isVisited && n.isAnimateOn && !n.isStart && !n.isFinish {
 				drawVisitedNode(x, y)
 			}
 		}
 	}
+}
+
+func animateVisited(nodes []*node) {
+	if vIndex == len(nodes) {
+		return
+	}
+	n := nodes[vIndex]
+	n.isAnimateOn = true
+	vIndex += 1
 }
 
 func drawNodeOutline(x, y int32) {
@@ -144,7 +156,9 @@ func litsenKeyboardEvents() {
 	if rl.IsKeyPressed(82) {
 		// reset
 		startVisualise = false
+		vIndex = 0
 		grid = getInitGrid()
+		visitedNodes = []*node{}
 	}
 }
 
@@ -229,12 +243,13 @@ func main() {
 		litsenMouseClick()
 		litsenKeyboardEvents()
 		if startVisualise {
-			visitedNodes := dijkstra(startNode, endNode, grid)
+			visitedNodes = dijkstra(startNode, endNode, grid)
 			fmt.Println("sasa", len(visitedNodes))
 			startVisualise = false
 		}
 		rl.BeginDrawing()
 		drawGrid(grid)
+		animateVisited(visitedNodes)
 		rl.ClearBackground(BG_COL)
 		rl.EndDrawing()
 	}
