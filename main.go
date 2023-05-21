@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"sort"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -43,9 +44,13 @@ var (
 	ST_COL = rl.Red
 )
 
+var grid [][]*node
+var startVisualise bool
+var startNode, endNode *node
+
 func getInitGrid() [][]*node {
+	var g [][]*node
 	var i, j int32
-	var grid [][]*node
 
 	l := length / BlockSize
 	w := width / BlockSize
@@ -63,16 +68,22 @@ func getInitGrid() [][]*node {
 				distance: Infinity,
 			}
 			r = append(r, n)
+			if n.isStart {
+				startNode = n
+			}
+			if n.isFinish {
+				endNode = n
+			}
 		}
-		grid = append(grid, r)
+		g = append(g, r)
 	}
 
-	return grid
+	return g
 
 }
 
-func drawGrid(grid [][]*node) {
-	for _, r := range grid {
+func drawGrid(g [][]*node) {
+	for _, r := range g {
 		for _, n := range r {
 			x := n.col * BlockSize
 			y := n.row * BlockSize
@@ -85,6 +96,9 @@ func drawGrid(grid [][]*node) {
 			}
 			if n.isBarrier && !n.isStart && !n.isFinish {
 				drawBarrierNode(x, y)
+			}
+			if n.isVisited && !n.isStart && !n.isFinish {
+				drawVisitedNode(x, y)
 			}
 		}
 	}
@@ -108,7 +122,11 @@ func drawBarrierNode(x, y int32) {
 	rl.DrawRectangle(x+1, y+1, BlockSize-3, BlockSize-3, OT_COL)
 }
 
-func litsenMouseClick(grid [][]*node) {
+func drawVisitedNode(x, y int32) {
+	rl.DrawRectangle(x+1, y+1, BlockSize-3, BlockSize-3, rl.SkyBlue)
+}
+
+func litsenMouseClick() {
 	if rl.IsMouseButtonPressed(0) {
 		points := rl.GetMousePosition()
 		fmt.Println(points)
@@ -119,12 +137,102 @@ func litsenMouseClick(grid [][]*node) {
 	}
 }
 
+func litsenKeyboardEvents() {
+	if rl.IsKeyPressed(83) {
+		startVisualise = true
+	}
+	if rl.IsKeyPressed(82) {
+		// reset
+		startVisualise = false
+		grid = getInitGrid()
+	}
+}
+
+func getAllNodes(grid [][]*node) []*node {
+	var nodes []*node
+	for _, r := range grid {
+		nodes = append(nodes, r...)
+	}
+	return nodes
+}
+
+func updateUnvisitedNeighborNodes(n *node, g [][]*node) []*node {
+	unvisitedNeighbors := []*node{}
+	l := length / BlockSize
+	w := width / BlockSize
+
+	if n.row > 0 {
+		unvisitedNeighbors = append(unvisitedNeighbors, g[n.row-1][n.col])
+	}
+	if n.row < l-1 {
+		unvisitedNeighbors = append(unvisitedNeighbors, g[n.row+1][n.col])
+	}
+	if n.col > 0 {
+		unvisitedNeighbors = append(unvisitedNeighbors, g[n.row][n.col-1])
+	}
+	if n.col < w-1 {
+		unvisitedNeighbors = append(unvisitedNeighbors, g[n.row][n.col+1])
+	}
+
+	uNodes := []*node{}
+
+	for _, un := range unvisitedNeighbors {
+		if !un.isVisited {
+			un.distance = n.distance + 1
+			uNodes = append(uNodes, un)
+		}
+	}
+
+	return uNodes
+
+}
+
+func dijkstra(startNode, endNode *node, g [][]*node) []*node {
+	var visitedNodes []*node
+
+	startNode.distance = 0
+	nodes := getAllNodes(g)
+
+	for len(nodes) != 0 {
+		sort.Slice(nodes, func(i, j int) bool {
+			return nodes[i].distance < nodes[j].distance
+		})
+		n := nodes[0]
+		nodes = nodes[1:]
+
+		if n.isBarrier {
+			continue
+		}
+
+		if n.distance == Infinity {
+			return visitedNodes
+		}
+
+		n.isVisited = true
+		visitedNodes = append(visitedNodes, n)
+
+		if n == endNode {
+			return visitedNodes
+		}
+
+		updateUnvisitedNeighborNodes(n, g)
+	}
+
+	return visitedNodes
+}
+
 func main() {
-	grid := getInitGrid()
+	grid = getInitGrid()
 	rl.InitWindow(width, length, "Path Finder Visualiser")
 	rl.SetTargetFPS(FPS)
 	for !rl.WindowShouldClose() {
-		litsenMouseClick(grid)
+		litsenMouseClick()
+		litsenKeyboardEvents()
+		if startVisualise {
+			visitedNodes := dijkstra(startNode, endNode, grid)
+			fmt.Println("sasa", len(visitedNodes))
+			startVisualise = false
+		}
 		rl.BeginDrawing()
 		drawGrid(grid)
 		rl.ClearBackground(BG_COL)
