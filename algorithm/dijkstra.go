@@ -69,6 +69,8 @@ func Dijkstra(v *grid.Visualiser) []*node.Node {
 		}
 
 		n.IsVisited = true
+		// animate only in the first cycle
+		n.AnimateVisited = v.IsDoneWithFirstCycle
 		visitedNodes = append(visitedNodes, n)
 
 		if n == v.EndNode {
@@ -88,6 +90,8 @@ func GetNodesInShortPath(v *grid.Visualiser) []*node.Node {
 		shortPathNodes = append(shortPathNodes, &node.Node{})
 		copy(shortPathNodes[1:], shortPathNodes)
 		shortPathNodes[0] = start
+		// animate only in the first cycle
+		start.AnimateShortPath = v.IsDoneWithFirstCycle
 		start = start.PreviousVisited
 	}
 

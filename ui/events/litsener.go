@@ -27,6 +27,10 @@ func LitsenMouseClick(v *grid.Visualiser) {
 			v.EndNode = v.Grid[y][x]
 			v.Grid[y][x].IsFinish = true
 		}
+		if v.IsDoneWithFirstCycle {
+			v.ResetLastVisit()
+			v.StartVisualise = true
+		}
 	}
 	if rl.IsMouseButtonDown(1) {
 		x, y := getXY()

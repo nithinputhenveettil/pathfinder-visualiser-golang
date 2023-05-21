@@ -24,14 +24,15 @@ var (
 )
 
 type Visualiser struct {
-	Grid           [][]*node.Node
-	StartVisualise bool
-	StartNode      *node.Node
-	EndNode        *node.Node
-	VIndex         int
-	SIndex         int
-	VisitedNodes   []*node.Node
-	ShortPathNodes []*node.Node
+	IsDoneWithFirstCycle bool
+	Grid                 [][]*node.Node
+	StartVisualise       bool
+	StartNode            *node.Node
+	EndNode              *node.Node
+	VIndex               int
+	SIndex               int
+	VisitedNodes         []*node.Node
+	ShortPathNodes       []*node.Node
 }
 
 func (v *Visualiser) Init() {
@@ -73,5 +74,18 @@ func (v *Visualiser) Reset() {
 	v.SIndex = 0
 	v.VisitedNodes = []*node.Node{}
 	v.ShortPathNodes = []*node.Node{}
+	v.IsDoneWithFirstCycle = false
 	v.Init()
+}
+
+func (v *Visualiser) ResetLastVisit() {
+	v.VIndex = 0
+	v.SIndex = 0
+	for _, n := range v.VisitedNodes {
+		n.AnimateShortPath = false
+		n.AnimateVisited = false
+		n.IsVisited = false
+	}
+	v.VisitedNodes = []*node.Node{}
+	v.ShortPathNodes = []*node.Node{}
 }

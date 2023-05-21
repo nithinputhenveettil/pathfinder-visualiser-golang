@@ -12,6 +12,9 @@ func NextTickAnimate(v *grid.Visualiser) {
 		n.AnimateShortPath = true
 		v.SIndex += 1
 	} else {
+		if !(v.SIndex == 0 || v.VIndex == 0) {
+			v.IsDoneWithFirstCycle = true
+		}
 		return
 	}
 }

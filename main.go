@@ -24,7 +24,9 @@ func main() {
 		}
 		rl.BeginDrawing()
 		draw.DrawGrid(v)
-		animate.NextTickAnimate(v)
+		if !v.IsDoneWithFirstCycle {
+			animate.NextTickAnimate(v)
+		}
 		rl.EndDrawing()
 	}
 	rl.CloseWindow()
