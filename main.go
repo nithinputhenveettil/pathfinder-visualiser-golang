@@ -85,8 +85,8 @@ func drawGrid(grid [][]*node) {
 }
 
 func drawStartNode(x, y int32) {
-	rl.DrawLineBezier(rl.Vector2{X: float32(x), Y: float32(y)}, rl.Vector2{X: float32(x + BlockSize), Y: float32(y + (BlockSize / 2))}, 4.0, ST_COL)
-	rl.DrawLineBezier(rl.Vector2{X: float32(x), Y: float32(y + BlockSize)}, rl.Vector2{X: float32(x + BlockSize), Y: float32(y + (BlockSize / 2))}, 4.0, ST_COL)
+	rl.DrawLineEx(rl.Vector2{X: float32(x + (BlockSize / 4)), Y: float32(y + (BlockSize / 4))}, rl.Vector2{X: float32(x + (BlockSize * 3 / 4)), Y: float32(y + (BlockSize / 2))}, 4.0, ST_COL)
+	rl.DrawLineEx(rl.Vector2{X: float32(x + (BlockSize / 4)), Y: float32(y + (BlockSize * 3 / 4))}, rl.Vector2{X: float32(x + (BlockSize * 3 / 4)), Y: float32(y + (BlockSize / 2))}, 4.0, ST_COL)
 }
 
 func drawEndNode(x, y int32) {
@@ -94,11 +94,18 @@ func drawEndNode(x, y int32) {
 	rl.DrawRing(rl.Vector2{X: float32(x + (BlockSize / 2)), Y: float32(y + (BlockSize / 2))}, 6, 10, 0, 360, 0, ST_COL)
 }
 
+func litsenMouseClick() {
+	if rl.IsMouseButtonDown(0) {
+		// points := rl.GetMousePosition()
+	}
+}
+
 func main() {
 	grid := getInitGrid()
 	rl.InitWindow(width, length, "Path Finder Visualiser")
 	rl.SetTargetFPS(FPS)
 	for !rl.WindowShouldClose() {
+		litsenMouseClick()
 		rl.BeginDrawing()
 		drawGrid(grid)
 		rl.ClearBackground(BG_COL)
