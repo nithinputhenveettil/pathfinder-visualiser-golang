@@ -67,8 +67,6 @@ func getInitGrid() [][]*node {
 		grid = append(grid, r)
 	}
 
-	grid[1][3].isBarrier = true
-
 	return grid
 
 }
@@ -78,8 +76,7 @@ func drawGrid(grid [][]*node) {
 		for _, n := range r {
 			x := n.col * BlockSize
 			y := n.row * BlockSize
-			rl.DrawLine(x, y, x+BlockSize, y, OT_COL)
-			rl.DrawLine(x, y, x, y+BlockSize, OT_COL)
+			drawNodeOutline(x, y)
 			if n.isStart {
 				drawStartNode(x, y)
 			}
@@ -93,6 +90,10 @@ func drawGrid(grid [][]*node) {
 	}
 }
 
+func drawNodeOutline(x, y int32) {
+	rl.DrawRectangleLines(x+1, y+1, BlockSize-3, BlockSize-3, OT_COL)
+}
+
 func drawStartNode(x, y int32) {
 	rl.DrawLineEx(rl.Vector2{X: float32(x + (BlockSize / 4)), Y: float32(y + (BlockSize / 4))}, rl.Vector2{X: float32(x + (BlockSize * 3 / 4)), Y: float32(y + (BlockSize / 2))}, 4.0, ST_COL)
 	rl.DrawLineEx(rl.Vector2{X: float32(x + (BlockSize / 4)), Y: float32(y + (BlockSize * 3 / 4))}, rl.Vector2{X: float32(x + (BlockSize * 3 / 4)), Y: float32(y + (BlockSize / 2))}, 4.0, ST_COL)
@@ -104,7 +105,7 @@ func drawEndNode(x, y int32) {
 }
 
 func drawBarrierNode(x, y int32) {
-	rl.DrawRectangle(x, y, BlockSize, BlockSize, rl.Black)
+	rl.DrawRectangle(x+1, y+1, BlockSize-3, BlockSize-3, OT_COL)
 }
 
 func litsenMouseClick(grid [][]*node) {
