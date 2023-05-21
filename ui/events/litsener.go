@@ -7,7 +7,11 @@ import (
 
 func LitsenMouseClick(v *grid.Visualiser) {
 	if rl.IsMouseButtonPressed(0) {
-		x, y := getXY()
+		points := rl.GetMousePosition()
+		if points.X <= 0 || points.X >= float32(grid.Width) || points.Y <= float32(grid.TopPadding) || points.Y-float32(grid.TopPadding) >= float32(grid.Length) {
+			return
+		}
+		x, y := getXY(points)
 		if v.Grid[y][x] == v.StartNode {
 			v.StartNode.IsStart = false
 			v.StartNode = nil
@@ -19,7 +23,11 @@ func LitsenMouseClick(v *grid.Visualiser) {
 		}
 	}
 	if rl.IsMouseButtonReleased(0) {
-		x, y := getXY()
+		points := rl.GetMousePosition()
+		if points.X <= 0 || points.X >= float32(grid.Width) || points.Y <= float32(grid.TopPadding) || points.Y-float32(grid.TopPadding) >= float32(grid.Length) {
+			return
+		}
+		x, y := getXY(points)
 		if v.StartNode == nil {
 			v.StartNode = v.Grid[y][x]
 			v.StartNode.IsStart = true
@@ -33,7 +41,11 @@ func LitsenMouseClick(v *grid.Visualiser) {
 		}
 	}
 	if rl.IsMouseButtonDown(1) {
-		x, y := getXY()
+		points := rl.GetMousePosition()
+		if points.X <= 0 || points.X >= float32(grid.Width) || points.Y <= float32(grid.TopPadding) || points.Y-float32(grid.TopPadding) >= float32(grid.Length) {
+			return
+		}
+		x, y := getXY(points)
 		v.Grid[y][x].IsBarrier = !v.Grid[y][x].IsBarrier
 	}
 }
@@ -48,8 +60,7 @@ func LitsenKeyboardEvents(v *grid.Visualiser) {
 	}
 }
 
-func getXY() (int32, int32) {
-	points := rl.GetMousePosition()
+func getXY(points rl.Vector2) (int32, int32) {
 	x := (int32)(points.X / float32(grid.BlockSize))
 	y := (int32)((points.Y - float32(grid.TopPadding)) / float32(grid.BlockSize))
 	return x, y
