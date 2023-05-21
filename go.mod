@@ -1,4 +1,4 @@
-module nithinp/pathfinder-visualiser
+module github.com/nithinputhenveettil/pathfinder-visualiser-golang
 
 go 1.16
 
