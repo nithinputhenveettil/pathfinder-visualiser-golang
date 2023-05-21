@@ -23,7 +23,7 @@ func main() {
 			v.StartVisualise = false
 		}
 		rl.BeginDrawing()
-		draw.DrawGrid(v.Grid)
+		draw.DrawGrid(v)
 		animate.NextTickAnimate(v)
 		rl.EndDrawing()
 	}

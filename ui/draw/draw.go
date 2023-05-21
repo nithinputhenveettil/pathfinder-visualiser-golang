@@ -31,36 +31,58 @@ func drawBarrierNode(x, y int32) {
 	rl.DrawRectangle(x+1, y+1, grid.BlockSize-3, grid.BlockSize-3, OT_COL)
 }
 
-func drawVisitedNodeshortPath(x, y int32) {
-	rl.DrawRectangle(x+1, y+1, grid.BlockSize-3, grid.BlockSize-3, rl.Yellow)
-}
-
 func drawVisitedNode(x, y int32) {
 	rl.DrawRectangle(x+1, y+1, grid.BlockSize-3, grid.BlockSize-3, rl.SkyBlue)
 }
 
-func DrawGrid(g [][]*node.Node) {
+func drawVisitedNodeshortPath(x, y int32, previousVisited *node.Node) {
+	// rl.DrawRectangle(x+1, y+1, grid.BlockSize-3, grid.BlockSize-3, rl.Yellow)
+	if previousVisited == nil {
+		return
+	}
+
+	xPrevious := previousVisited.Col * grid.BlockSize
+	yPrevious := previousVisited.Row * grid.BlockSize
+
+	rl.DrawLineEx(rl.Vector2{
+		X: float32(xPrevious + (grid.BlockSize / 2)),
+		Y: float32(yPrevious + (grid.BlockSize / 2)),
+	}, rl.Vector2{
+		X: float32(x + (grid.BlockSize / 2)),
+		Y: float32(y + (grid.BlockSize / 2)),
+	}, 4.0, ST_COL)
+
+}
+
+func DrawGrid(v *grid.Visualiser) {
 	rl.ClearBackground(BG_COL)
-	for _, r := range g {
+	for _, r := range v.Grid {
 		for _, n := range r {
 			x := n.Col * grid.BlockSize
 			y := n.Row * grid.BlockSize
 			drawNodeOutline(x, y)
+
+			if n.IsBarrier && !n.IsStart && !n.IsFinish {
+				drawBarrierNode(x, y)
+			}
+			if n.IsVisited && n.AnimateVisited {
+				drawVisitedNode(x, y)
+			}
 			if n.IsStart {
 				drawStartNode(x, y)
 			}
 			if n.IsFinish {
 				drawEndNode(x, y)
 			}
-			if n.IsBarrier && !n.IsStart && !n.IsFinish {
-				drawBarrierNode(x, y)
-			}
-			if n.IsVisited && n.AnimateVisited && !n.IsStart && !n.IsFinish {
-				drawVisitedNode(x, y)
-			}
-			if n.IsVisited && n.AnimateShortPath && !n.IsStart && !n.IsFinish {
-				drawVisitedNodeshortPath(x, y)
-			}
+
+		}
+	}
+
+	for _, n := range v.ShortPathNodes {
+		x := n.Col * grid.BlockSize
+		y := n.Row * grid.BlockSize
+		if n.IsVisited && n.AnimateShortPath && !n.IsStart {
+			drawVisitedNodeshortPath(x, y, n.PreviousVisited)
 		}
 	}
 }
