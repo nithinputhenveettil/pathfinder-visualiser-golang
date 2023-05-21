@@ -81,10 +81,14 @@ func (v *Visualiser) Reset() {
 func (v *Visualiser) ResetLastVisit() {
 	v.VIndex = 0
 	v.SIndex = 0
-	for _, n := range v.VisitedNodes {
-		n.AnimateShortPath = false
-		n.AnimateVisited = false
-		n.IsVisited = false
+	for _, r := range v.Grid {
+		for _, n := range r {
+			n.PreviousVisited = nil
+			n.AnimateShortPath = false
+			n.AnimateVisited = false
+			n.IsVisited = false
+			n.Distance = Infinity
+		}
 	}
 	v.VisitedNodes = []*node.Node{}
 	v.ShortPathNodes = []*node.Node{}

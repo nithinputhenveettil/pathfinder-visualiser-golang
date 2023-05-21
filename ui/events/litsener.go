@@ -9,10 +9,10 @@ func LitsenMouseClick(v *grid.Visualiser) {
 	if rl.IsMouseButtonPressed(0) {
 		x, y := getXY()
 		if v.Grid[y][x] == v.StartNode {
-			v.Grid[y][x].IsStart = false
+			v.StartNode.IsStart = false
 			v.StartNode = nil
 		} else if v.Grid[y][x] == v.EndNode {
-			v.Grid[y][x].IsFinish = false
+			v.EndNode.IsFinish = false
 			v.EndNode = nil
 		} else {
 			v.Grid[y][x].IsBarrier = !v.Grid[y][x].IsBarrier
@@ -22,10 +22,10 @@ func LitsenMouseClick(v *grid.Visualiser) {
 		x, y := getXY()
 		if v.StartNode == nil {
 			v.StartNode = v.Grid[y][x]
-			v.Grid[y][x].IsStart = true
+			v.StartNode.IsStart = true
 		} else if v.EndNode == nil {
 			v.EndNode = v.Grid[y][x]
-			v.Grid[y][x].IsFinish = true
+			v.EndNode.IsFinish = true
 		}
 		if v.IsDoneWithFirstCycle {
 			v.ResetLastVisit()

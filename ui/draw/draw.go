@@ -7,36 +7,35 @@ import (
 )
 
 var (
-	BG_COL = rl.White
-	OT_COL = rl.Black
-
-	ST_COL = rl.Red
+	bgCol       = rl.NewColor(222, 240, 240, 255)
+	outlineCol  = rl.DarkGray
+	visitedCol  = rl.NewColor(102, 181, 210, 255)
+	startEndCol = rl.Red
 )
 
 func drawNodeOutline(x, y int32) {
-	rl.DrawRectangleLines(x+1, y+1, grid.BlockSize-3, grid.BlockSize-3, OT_COL)
+	rl.DrawRectangleLines(x+1, y+1, grid.BlockSize-3, grid.BlockSize-3, outlineCol)
 }
 
 func drawStartNode(x, y int32) {
-	rl.DrawLineEx(rl.Vector2{X: float32(x + (grid.BlockSize / 4)), Y: float32(y + (grid.BlockSize / 4))}, rl.Vector2{X: float32(x + (grid.BlockSize * 3 / 4)), Y: float32(y + (grid.BlockSize / 2))}, 4.0, ST_COL)
-	rl.DrawLineEx(rl.Vector2{X: float32(x + (grid.BlockSize / 4)), Y: float32(y + (grid.BlockSize * 3 / 4))}, rl.Vector2{X: float32(x + (grid.BlockSize * 3 / 4)), Y: float32(y + (grid.BlockSize / 2))}, 4.0, ST_COL)
+	rl.DrawLineEx(rl.Vector2{X: float32(x + (grid.BlockSize / 4)), Y: float32(y + (grid.BlockSize / 4))}, rl.Vector2{X: float32(x + (grid.BlockSize * 3 / 4)), Y: float32(y + (grid.BlockSize / 2))}, 4.0, startEndCol)
+	rl.DrawLineEx(rl.Vector2{X: float32(x + (grid.BlockSize / 4)), Y: float32(y + (grid.BlockSize * 3 / 4))}, rl.Vector2{X: float32(x + (grid.BlockSize * 3 / 4)), Y: float32(y + (grid.BlockSize / 2))}, 4.0, startEndCol)
 }
 
 func drawEndNode(x, y int32) {
-	rl.DrawCircleV(rl.Vector2{X: float32(x + (grid.BlockSize / 2)), Y: float32(y + (grid.BlockSize / 2))}, 3, ST_COL)
-	rl.DrawRing(rl.Vector2{X: float32(x + (grid.BlockSize / 2)), Y: float32(y + (grid.BlockSize / 2))}, 6, 10, 0, 360, 0, ST_COL)
+	rl.DrawCircleV(rl.Vector2{X: float32(x + (grid.BlockSize / 2)), Y: float32(y + (grid.BlockSize / 2))}, 3, startEndCol)
+	rl.DrawRing(rl.Vector2{X: float32(x + (grid.BlockSize / 2)), Y: float32(y + (grid.BlockSize / 2))}, 6, 10, 0, 360, 0, startEndCol)
 }
 
 func drawBarrierNode(x, y int32) {
-	rl.DrawRectangle(x+1, y+1, grid.BlockSize-3, grid.BlockSize-3, OT_COL)
+	rl.DrawRectangle(x+1, y+1, grid.BlockSize-3, grid.BlockSize-3, outlineCol)
 }
 
 func drawVisitedNode(x, y int32) {
-	rl.DrawRectangle(x+1, y+1, grid.BlockSize-3, grid.BlockSize-3, rl.SkyBlue)
+	rl.DrawRectangle(x+1, y+1, grid.BlockSize-3, grid.BlockSize-3, visitedCol)
 }
 
 func drawVisitedNodeshortPath(x, y int32, previousVisited *node.Node) {
-	// rl.DrawRectangle(x+1, y+1, grid.BlockSize-3, grid.BlockSize-3, rl.Yellow)
 	if previousVisited == nil {
 		return
 	}
@@ -50,12 +49,12 @@ func drawVisitedNodeshortPath(x, y int32, previousVisited *node.Node) {
 	}, rl.Vector2{
 		X: float32(x + (grid.BlockSize / 2)),
 		Y: float32(y + (grid.BlockSize / 2)),
-	}, 4.0, ST_COL)
+	}, 4.0, startEndCol)
 
 }
 
 func DrawGrid(v *grid.Visualiser) {
-	rl.ClearBackground(BG_COL)
+	rl.ClearBackground(bgCol)
 	for _, r := range v.Grid {
 		for _, n := range r {
 			x := n.Col * grid.BlockSize
