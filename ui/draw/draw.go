@@ -40,7 +40,7 @@ func drawVisitedNode(x, y int32) {
 func drawTexts(v *grid.Visualiser) {
 	rl.DrawText("Path Finder Visualiser - Dijkstra's Algorithm!", 400, 15, 25, rl.Black)
 	rl.DrawText("Press 's' to start visualise; Press 'r' to reset everything", 20, grid.Length+60, 17, rl.Black)
-	rl.DrawText("Use left/right mouse button to add barrier", 20, grid.Length+90, 17, rl.Black)
+	rl.DrawText("Use left/right mouse button to add a barrier in grid", 20, grid.Length+90, 17, rl.Black)
 	rl.DrawText("Drag start/end node to re-position it in the grid", 20, grid.Length+120, 17, rl.Black)
 	rl.DrawLineEx(rl.Vector2{X: float32(grid.Width / 2), Y: float32(grid.Length) + 60}, rl.Vector2{X: float32(grid.Width / 2), Y: float32(grid.Length) + 140}, 8.0, rl.DarkGray)
 	rl.DrawText(fmt.Sprintf("Nodes Visited  : %d", v.VIndex), grid.Width-380, grid.Length+60, 22, rl.Black)
